@@ -1,0 +1,5 @@
+{
+  "name": "FatigueLife Pro: Spectral Analysis",
+  "description": "A professional engineering tool to calculate fatigue damage and life from ANSYS Random Vibration (PSD) results using Narrow Band and Wirsching methods.",
+  "requestFramePermissions": []
+}
