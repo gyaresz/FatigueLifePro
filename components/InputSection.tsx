@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { DataPoint } from '../types';
-import { Upload, FileText, AlertCircle, Table as TableIcon, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
+import { Upload, FileText, AlertCircle, Table as TableIcon, ChevronDown, ChevronUp, AlertTriangle, PlayCircle } from 'lucide-react';
 
 interface InputSectionProps {
   onDataLoaded: (data: DataPoint[]) => void;
@@ -20,6 +20,21 @@ export const InputSection: React.FC<InputSectionProps> = ({
   const [previewData, setPreviewData] = useState<DataPoint[]>([]);
   const [showPreview, setShowPreview] = useState(true);
   const [fileName, setFileName] = useState<string | null>(null);
+
+  // Sample data for demo purposes
+  const DEMO_DATA = `
+    10, 0.05
+    20, 2.5
+    50, 12.0
+    150, 12.0
+    300, 4.5
+    800, 0.8
+    2000, 0.01
+  `;
+
+  const handleLoadDemo = () => {
+      parseCSV(DEMO_DATA, "DEMO_Bracket_PSD.csv (Test Data)");
+  };
 
   const parseCSV = (text: string, name: string) => {
     try {
@@ -111,8 +126,9 @@ export const InputSection: React.FC<InputSectionProps> = ({
   return (
     <div className="space-y-4 p-4">
         
+        {/* Upload Area */}
         <div 
-          className={`relative border-2 border-dashed rounded-lg py-10 px-4 text-center transition-all ${
+          className={`relative border-2 border-dashed rounded-lg py-8 px-4 text-center transition-all ${
             dragActive 
             ? "border-indigo-500 bg-indigo-50 scale-[1.02]" 
             : "border-slate-300 hover:border-indigo-400 hover:bg-slate-50"
@@ -129,14 +145,37 @@ export const InputSection: React.FC<InputSectionProps> = ({
             accept=".csv,.txt,.dat"
             onChange={handleFileChange}
           />
-          <div className="flex flex-col items-center gap-3 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-            <div className={`p-3 rounded-full ${fileName ? 'bg-indigo-100' : 'bg-slate-100'}`}>
-                <Upload className={`w-6 h-6 ${fileName ? 'text-indigo-600' : 'text-slate-400'}`} />
+          <div className="flex flex-col items-center gap-3">
+            <div 
+                className={`p-3 rounded-full cursor-pointer transition-colors ${fileName && !fileName.includes("Demo") ? 'bg-indigo-100' : 'bg-slate-100 hover:bg-slate-200'}`}
+                onClick={() => fileInputRef.current?.click()}
+            >
+                <Upload className={`w-6 h-6 ${fileName && !fileName.includes("Demo") ? 'text-indigo-600' : 'text-slate-400'}`} />
             </div>
-            <div>
-                <p className="text-sm font-bold text-slate-700">{fileName || "Drop Ansys Export Here"}</p>
-                <p className="text-xs text-slate-500 mt-1">Accepts .txt or .csv</p>
+            
+            <div className="space-y-1">
+                <p 
+                    className="text-sm font-bold text-slate-700 cursor-pointer hover:text-indigo-600 transition-colors"
+                    onClick={() => fileInputRef.current?.click()}
+                >
+                    {fileName || "Click to Upload File"}
+                </p>
+                <p className="text-xs text-slate-500">.txt or .csv from Ansys</p>
             </div>
+
+            <div className="flex items-center gap-2 w-full justify-center my-2">
+                 <div className="h-px bg-slate-200 w-16"></div>
+                 <span className="text-[10px] text-slate-400 uppercase">OR</span>
+                 <div className="h-px bg-slate-200 w-16"></div>
+            </div>
+
+            <button 
+                onClick={handleLoadDemo}
+                className="flex items-center gap-2 px-4 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-bold hover:bg-emerald-100 transition-colors"
+            >
+                <PlayCircle className="w-3.5 h-3.5" />
+                Load Test Data (Demo)
+            </button>
           </div>
         </div>
 
@@ -167,14 +206,14 @@ export const InputSection: React.FC<InputSectionProps> = ({
 
         {/* Data Preview Table */}
         {previewData.length > 0 && !parseError && (
-          <div className="mt-4 border border-slate-200 rounded-lg overflow-hidden">
+          <div className="mt-4 border border-slate-200 rounded-lg overflow-hidden animate-in fade-in slide-in-from-top-2">
             <button 
                 onClick={() => setShowPreview(!showPreview)}
                 className="w-full flex items-center justify-between px-4 py-2 bg-slate-50 text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors"
             >
                 <span className="flex items-center gap-2">
                     <TableIcon className="w-4 h-4" />
-                    Preview ({previewData.length} pts)
+                    {fileName?.includes("Demo") ? "Demo Data Preview" : "File Preview"} ({previewData.length} pts)
                 </span>
                 {showPreview ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>}
             </button>
